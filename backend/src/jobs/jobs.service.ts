@@ -2,10 +2,15 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { CreateJobDto } from './dto/create-job.dto';
 import { Job } from './interfaces/job.interface';
+import { JobsProcessor } from './processor/job.processor';
 
 @Injectable()
 export class JobsService {
   private jobs: Job[] = [];
+
+  constructor(
+    private readonly jobsProcessor: JobsProcessor,
+  ) { }
 
   createJob(dto: CreateJobDto) {
     const job: Job = {
@@ -23,11 +28,32 @@ export class JobsService {
 
     this.jobs.push(job);
 
+    void this.jobsProcessor.process(job);
+
     return job;
   }
 
   getJobs() {
-    return this.jobs;
+    return this.jobs.map((job) => {
+      const success =
+        job.urls.filter(
+          (url) => url.status === 'success'
+        ).length;
+
+      const errors =
+        job.urls.filter(
+          (url) => url.status === 'error'
+        ).length;
+
+      return {
+        id: job.id,
+        createdAt: job.createdAt,
+        status: job.status,
+        total: job.urls.length,
+        success,
+        errors,
+      };
+    });
   }
 
   findJobById(id: string): Job {
@@ -46,9 +72,13 @@ export class JobsService {
 
   cancelJob(id: string): Job {
     const job = this.findJobById(id);
-
     job.status = 'cancelled';
 
+    job.urls.forEach((urlCheck) => {
+      if (urlCheck.status === 'pending') {
+        urlCheck.status = 'cancelled';
+      }
+    });
     return job;
   }
 }
