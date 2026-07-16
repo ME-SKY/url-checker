@@ -10,13 +10,6 @@ export class UrlCheckerService {
         method: 'HEAD',
       });
 
-      const delay =
-        Math.floor(
-          Math.random() * 10000
-        );
-
-      await this.delay(delay);
-
       return {
         httpStatus: response.status,
       };
@@ -29,11 +22,5 @@ export class UrlCheckerService {
             : 'Unknown error'
       };
     }
-  }
-
-  private delay(ms: number) {
-    return new Promise(
-      resolve => setTimeout(resolve, ms)
-    );
   }
 }

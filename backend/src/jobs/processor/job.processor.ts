@@ -1,9 +1,11 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Job } from "../interfaces/job.interface";
 import { UrlCheckerService } from "./url-checker.service";
+import { UrlCheck } from "../interfaces/url-check.interface";
 
 @Injectable()
 export class JobsProcessor {
+  private static readonly MAX_CONCURRENT_REQUESTS = 5;
   private readonly logger = new Logger(JobsProcessor.name);
 
   constructor(
@@ -25,52 +27,35 @@ export class JobsProcessor {
     job.status = 'in_progress';
     job.startedAt = new Date();
 
-    for (const urlCheck of job.urls) {
+    let currentIndex = 0;
 
-      this.logger.log(
-        `Checking URL ${urlCheck.url} in job ${job.id}`,
-      );
+    const worker = async () => {
+      while (true) {
+        if (this.isCancelled(job)) {
+          return;
+        }
+        const index = currentIndex++;
+        if (index >= job.urls.length) {
+          return;
+        }
 
-      if (this.isCancelled(job)) {
-        return;
-      }
-
-      urlCheck.status = 'in_progress';
-      urlCheck.startedAt = new Date();
-
-      const startTime = Date.now();
-
-      const result =
-        await this.urlCheckerService.check(
-          urlCheck.url,
-        );
-
-      const endTime = Date.now();
-
-      urlCheck.finishedAt = new Date();
-      urlCheck.duration =
-        endTime - startTime;
-
-      if (result.httpStatus) {
         this.logger.log(
-          `${urlCheck.url} success ${result.httpStatus}`,
+          `Worker processing ${job.urls[index].url}`,
         );
 
-        urlCheck.status = 'success';
-        urlCheck.httpStatus =
-          result.httpStatus;
-      }
-
-      if (result.error) {
-        this.logger.error(
-          `${urlCheck.url} failed: ${result.error}`,
+        await this.processUrl(
+          job,
+          job.urls[index],
         );
-
-        urlCheck.status = 'error';
-        urlCheck.error =
-          result.error;
       }
-    }
+    };
+
+    await Promise.all(
+      Array.from(
+        { length: JobsProcessor.MAX_CONCURRENT_REQUESTS },
+        () => worker(),
+      ),
+    );
 
     if (!this.isCancelled(job)) {
       job.status = 'completed';
@@ -85,7 +70,60 @@ export class JobsProcessor {
     job.finishedAt = new Date();
   }
 
+  private async processUrl(
+    job: Job,
+    urlCheck: UrlCheck,
+  ): Promise<void> {
+
+    if (this.isCancelled(job)) {
+      return;
+    }
+
+    urlCheck.status = 'in_progress';
+    urlCheck.startedAt = new Date();
+
+    const startTime = Date.now();
+
+    const result =
+      await this.urlCheckerService.check(
+        urlCheck.url,
+      );
+
+    await this.delay();
+
+    const endTime = Date.now();
+
+    urlCheck.finishedAt = new Date();
+    urlCheck.duration = endTime - startTime;
+
+    if (result.error) {
+      urlCheck.status = 'error';
+      urlCheck.error = result.error;
+
+      this.logger.error(
+        `${urlCheck.url} failed: ${result.error}`,
+      );
+    } else if (result.httpStatus) {
+      urlCheck.status = 'success';
+      urlCheck.httpStatus = result.httpStatus;
+
+      this.logger.log(
+        `${urlCheck.url} success: ${result.httpStatus}`,
+      );
+    }
+  }
+
   private isCancelled(job: Job) {
     return job.status === 'cancelled';
+  }
+
+  private async delay(): Promise<void> {
+    const timeout = Math.floor(
+      Math.random() * 10000,
+    );
+
+    await new Promise((resolve) =>
+      setTimeout(resolve, timeout),
+    );
   }
 }

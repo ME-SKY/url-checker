@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto';
 import { CreateJobDto } from './dto/create-job.dto';
 import { Job } from './interfaces/job.interface';
 import { JobsProcessor } from './processor/job.processor';
+import { JobSummaryDto } from './dto/job-summary.dto';
 
 @Injectable()
 export class JobsService {
@@ -33,7 +34,7 @@ export class JobsService {
     return job;
   }
 
-  getJobs() {
+  getJobs(): JobSummaryDto[] {
     return this.jobs.map((job) => {
       const success =
         job.urls.filter(
