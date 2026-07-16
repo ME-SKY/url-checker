@@ -1,39 +1,30 @@
-import './App.css'
-import { useState } from 'react';
-import { getJobs } from './api/jobs.api';
-import type { JobSummary } from './types/job';
+import { JobForm } from './components/JobForm';
+import { JobList } from './components/JobList';
+import { JobDetails } from './components/JobDetails';
 
 function App() {
-  const [jobs, setJobs] = useState<JobSummary[]>([]);
-
-  async function handleClick() {
-    try {
-      const data = await getJobs();
-
-      setJobs(data);
-
-      console.log(data);
-
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-
   return (
-    <div>
-      <button onClick={handleClick}>
-        Load jobs
-      </button>
+    <div className="h-screen overflow-hidden bg-slate-100 p-6 flex flex-col gap-6">
 
-      <pre>
-        {JSON.stringify(jobs,
-          null,
-          2,
-        )}
-      </pre>
+      <h1 className="text-3xl font-bold self-center">
+        URL Checker
+      </h1>
+
+      <JobForm className='self-center'/>
+
+      <div className="grid min-h-0 flex-1 h-full justify-center grid-cols-[360px_360px] gap-6">
+
+        <div className="list flex flex-col overflow-hidden">
+          <JobList />
+        </div>
+        
+
+        <JobDetails />
+
+      </div>
+
     </div>
   );
 }
 
-export default App
+export default App;

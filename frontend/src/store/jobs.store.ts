@@ -10,17 +10,11 @@ import {
 
 
 interface JobsState {
-
   jobs: JobSummary[];
-
   activeJobId: string | null;
-
   activeJob: Job | null;
-
   loading: boolean;
-
   error: string | null;
-
 
   fetchJobs: () => Promise<void>;
 
@@ -46,68 +40,87 @@ export const useJobsStore =
     error: null,
 
     async fetchJobs() {
-
       try {
-        set({
-          loading: true,
-          error: null,
-        });
+        set({ loading: true, error: null });
+
         const jobs = await getJobs();
 
+        set({ jobs });
+      } catch (error) {
         set({
-          jobs,
-        });
-
-      } catch(error) {
-        set({
-          error:
-            error instanceof Error
-              ? error.message
-              : 'Unknown error',
+          error: error instanceof Error
+            ? error.message
+            : 'Unknown error',
         });
       } finally {
-        set({
-          loading: false,
-        });
+        set({ loading: false });
       }
     },
 
     async createJob(urls) {
-      const {jobId} = await createJobApi(urls);
+      try {
+        set({ loading: true, error: null });
 
-      set({
-        activeJobId: jobId,
-      });
+        const { jobId } = await createJobApi(urls);
+        const job = await getJobById(jobId);
+        const jobs = await getJobs();
 
-      await getJobById(jobId)
-        .then((job) => {
-          set({
-            activeJob: job,
-          });
+        set({
+          activeJobId: jobId,
+          activeJob: job,
+          jobs,
         });
-
-      await getJobs()
-        .then((jobs) => {
-          set({
-            jobs,
-          });
+      } catch (error) {
+        set({
+          error: error instanceof Error
+            ? error.message
+            : 'Unknown error',
         });
+      } finally {
+        set({ loading: false });
+      }
     },
 
     async selectJob(id) {
-      const job = await getJobById(id);
+      try {
+        set({ loading: true, error: null });
 
-      set({
-        activeJobId: id,
-        activeJob: job,
-      });
+        const job = await getJobById(id);
+
+        set({
+          activeJobId: id,
+          activeJob: job,
+        });
+      } catch (error) {
+        set({
+          error: error instanceof Error
+            ? error.message
+            : 'Unknown error',
+        });
+      } finally {
+        set({ loading: false });
+      }
     },
 
     async cancelJob(id) {
-      const job = await cancelJobApi(id);
+      try {
+        set({ loading: true, error: null });
 
-      set({
-        activeJob: job,
-      });
+        const job = await cancelJobApi(id);
+        const jobs = await getJobs();
+
+        set({
+          activeJob: job,
+          jobs,
+        });
+      } catch (error) {
+        set({
+          error: error instanceof Error
+            ? error.message
+            : 'Unknown error',
+        });
+      } finally {
+        set({ loading: false });
+      }
     },
   }));
