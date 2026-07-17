@@ -1,0 +1,23 @@
+services:
+  
+  backend:
+    build:
+      context: ./backend
+    container_name: url-checker-backend
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3001:3001"
+    environment:
+      PORT: 3001
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_BASE_PATH: /url-checker/
+    container_name: url-checker-frontend
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8282:80"
+    depends_on:
+      - backend  
