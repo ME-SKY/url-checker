@@ -20,7 +20,7 @@ export class JobsProcessor {
       job.id,
       controller,
     );
-    
+
     this.logger.log(
       `Start processing job ${job.id}`,
     );
@@ -102,11 +102,17 @@ export class JobsProcessor {
 
     await this.delay();
 
+    if (this.isCancelled(job)) { //set status after delay only if job is not cancelled
+      return;
+    }
+
     const endTime = Date.now();
 
     urlCheck.finishedAt = new Date();
     urlCheck.duration = endTime - startTime;
 
+
+    urlCheck.status = 'pending';
     if (result.error) {
       urlCheck.status = 'error';
       urlCheck.error = result.error;
