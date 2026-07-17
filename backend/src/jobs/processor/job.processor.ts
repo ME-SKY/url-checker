@@ -7,12 +7,20 @@ import { UrlCheck } from "../interfaces/url-check.interface";
 export class JobsProcessor {
   private static readonly MAX_CONCURRENT_REQUESTS = 5;
   private readonly logger = new Logger(JobsProcessor.name);
+  private readonly controllers = new Map<string, AbortController>();
 
   constructor(
     private readonly urlCheckerService: UrlCheckerService,
   ) { }
 
   async process(job: Job) {
+    const controller = new AbortController();
+
+    this.controllers.set(
+      job.id,
+      controller,
+    );
+    
     this.logger.log(
       `Start processing job ${job.id}`,
     );
@@ -46,6 +54,7 @@ export class JobsProcessor {
         await this.processUrl(
           job,
           job.urls[index],
+          controller.signal,
         );
       }
     };
@@ -73,6 +82,7 @@ export class JobsProcessor {
   private async processUrl(
     job: Job,
     urlCheck: UrlCheck,
+    signal?: AbortSignal
   ): Promise<void> {
 
     if (this.isCancelled(job)) {
@@ -87,6 +97,7 @@ export class JobsProcessor {
     const result =
       await this.urlCheckerService.check(
         urlCheck.url,
+        signal
       );
 
     await this.delay();
@@ -99,6 +110,7 @@ export class JobsProcessor {
     if (result.error) {
       urlCheck.status = 'error';
       urlCheck.error = result.error;
+      urlCheck.httpStatus = result.httpStatus;
 
       this.logger.error(
         `${urlCheck.url} failed: ${result.error}`,
@@ -111,6 +123,17 @@ export class JobsProcessor {
         `${urlCheck.url} success: ${result.httpStatus}`,
       );
     }
+  }
+
+  cancel(jobId: string) {
+    const controller =
+      this.controllers.get(jobId);
+
+    if (controller) {
+      controller.abort();
+    }
+
+    this.controllers.delete(jobId);
   }
 
   private isCancelled(job: Job) {

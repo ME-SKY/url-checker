@@ -2,10 +2,8 @@ import { useJobsStore } from '../store/jobs.store';
 import { StatusBadge } from './StatusBadge';
 
 export function JobDetails() {
-  const job =
-    useJobsStore(
-      (state) => state.activeJob,
-    );
+  const job = useJobsStore((state) => state.activeJob);
+  const cancelJob = useJobsStore((state) => state.cancelJob);
 
   if (!job) {
     return (
@@ -17,17 +15,16 @@ export function JobDetails() {
     );
   }
 
-  const completed =
-    job.urls.filter(
-      (item) =>
-        item.status === 'success' ||
-        item.status === 'error',
-    ).length;
+  const completed = job.urls.filter((item) =>
+    item.status === 'success' ||
+    item.status === 'error'
+  ).length;
+
+  const progress = Math.round((completed / job.urls.length) * 100);
 
 
   return (
     <div className="h-fit space-y-6 rounded-xl border bg-white p-6">
-
       <div className="flex items-start justify-between">
         <div>
           <h2 className="text-xl font-semibold">
@@ -39,9 +36,20 @@ export function JobDetails() {
           </p>
         </div>
 
-        <StatusBadge
-          status={job.status}
-        />
+        <div className="flex flex-col items-end gap-3">
+
+          <StatusBadge
+            status={job.status}
+          />
+
+          {(job.status === 'pending' ||
+            job.status === 'in_progress') && (
+              <button onClick={() => cancelJob(job.id)}
+                className="rounded-lg bg-red-500 px-3 py-1.5 text-sm text-white hover:bg-red-600">
+                Cancel job
+              </button>
+            )}
+        </div>
       </div>
 
 
@@ -65,6 +73,59 @@ export function JobDetails() {
             ).toLocaleString()
           }
         />
+
+        <InfoItem
+          label="Started"
+          value={
+            job.startedAt
+              ? new Date(
+                job.startedAt,
+              ).toLocaleString()
+              : '-'
+          }
+        />
+
+        <InfoItem
+          label="Finished"
+          value={
+            job.finishedAt
+              ? new Date(
+                job.finishedAt,
+              ).toLocaleString()
+              : '-'
+          }
+        />
+
+      </div>
+
+
+      <div>
+        <div className="mb-2 flex justify-between text-sm">
+          <span>
+            Progress
+          </span>
+
+          <span>
+            {completed}/{job.urls.length}
+          </span>
+        </div>
+
+
+        <div className="h-2 overflow-hidden rounded-full bg-slate-200">
+
+          <div
+            className="
+              h-full
+              rounded-full
+              bg-blue-500
+              transition-all
+            "
+            style={{
+              width: `${progress}%`,
+            }}
+          />
+
+        </div>
 
       </div>
 
@@ -102,12 +163,16 @@ export function JobDetails() {
 
               </div>
 
-
               <div className="flex items-center gap-3">
-
                 {urlCheck.httpStatus && (
                   <span className="text-sm">
                     {urlCheck.httpStatus}
+                  </span>
+                )}
+
+                {urlCheck.duration && (
+                  <span className="text-sm text-gray-500">
+                    {urlCheck.duration}ms
                   </span>
                 )}
 
@@ -116,18 +181,15 @@ export function JobDetails() {
                     urlCheck.status
                   }
                 />
-
               </div>
-
             </div>
           ))}
-
         </div>
       </div>
-
     </div>
   );
 }
+
 
 function InfoItem({
   label,

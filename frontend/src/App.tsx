@@ -1,10 +1,14 @@
 import { JobForm } from './components/JobForm';
 import { JobList } from './components/JobList';
 import { JobDetails } from './components/JobDetails';
+import { useJobPolling } from './hooks/useJobPolling';
 
 function App() {
+
+  useJobPolling();
+
   return (
-    <div className="h-screen overflow-hidden bg-slate-100 p-6 flex flex-col gap-6">
+    <div className="h-screen bg-slate-100 p-6 flex flex-col gap-6">
 
       <h1 className="text-3xl font-bold self-center">
         URL Checker

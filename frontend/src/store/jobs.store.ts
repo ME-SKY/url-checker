@@ -29,6 +29,10 @@ interface JobsState {
   cancelJob: (
     id: string,
   ) => Promise<void>;
+
+  updateActiveJob: (
+    job: Job
+  ) => void;
 }
 
 export const useJobsStore =
@@ -111,6 +115,7 @@ export const useJobsStore =
 
         set({
           activeJob: job,
+          activeJobId: job.id,
           jobs,
         });
       } catch (error) {
@@ -123,4 +128,11 @@ export const useJobsStore =
         set({ loading: false });
       }
     },
+
+    updateActiveJob(job) {
+      set({
+        activeJob: job,
+        activeJobId: job.id
+      });
+    }
   }));

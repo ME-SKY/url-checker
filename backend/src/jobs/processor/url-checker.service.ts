@@ -4,10 +4,10 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class UrlCheckerService {
 
-  async check(url: string) {
+  async check(url: string, signal?: AbortSignal) {
     try {
       const response = await fetch(url, {
-        method: 'HEAD',
+        method: 'HEAD', signal
       });
 
       return {

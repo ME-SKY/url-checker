@@ -74,9 +74,10 @@ export class JobsService {
   cancelJob(id: string): Job {
     const job = this.findJobById(id);
     job.status = 'cancelled';
+    this.jobsProcessor.cancel(id);
 
     job.urls.forEach((urlCheck) => {
-      if (urlCheck.status === 'pending') {
+      if (urlCheck.status === 'pending' || urlCheck.status === 'in_progress') {
         urlCheck.status = 'cancelled';
       }
     });
