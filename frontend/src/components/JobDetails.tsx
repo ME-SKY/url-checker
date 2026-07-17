@@ -1,5 +1,6 @@
 import { useJobsStore } from '../store/jobs.store';
 import { StatusBadge } from './StatusBadge';
+import { UrlCard } from './UrlCard';
 
 export function JobDetails() {
   const job = useJobsStore((state) => state.activeJob);
@@ -56,22 +57,8 @@ export function JobDetails() {
       <div className="grid grid-cols-3 gap-4">
 
         <InfoItem
-          label="Total URLs"
-          value={job.urls.length}
-        />
-
-        <InfoItem
           label="Processed"
           value={`${completed}/${job.urls.length}`}
-        />
-
-        <InfoItem
-          label="Created"
-          value={
-            new Date(
-              job.createdAt,
-            ).toLocaleString()
-          }
         />
 
         <InfoItem
@@ -110,25 +97,22 @@ export function JobDetails() {
           </span>
         </div>
 
-
-        <div className="h-2 overflow-hidden rounded-full bg-slate-200">
-
-          <div
-            className="
+        {job.status === 'in_progress' &&
+          <div className="h-2 overflow-hidden rounded-full bg-slate-200">
+            <div
+              className="
               h-full
               rounded-full
               bg-blue-500
               transition-all
             "
-            style={{
-              width: `${progress}%`,
-            }}
-          />
-
-        </div>
-
+              style={{
+                width: `${progress}%`,
+              }}
+            ></div>
+          </div>
+        }
       </div>
-
 
       <div>
         <h3 className="mb-3 font-medium">
@@ -136,54 +120,7 @@ export function JobDetails() {
         </h3>
 
         <div className="space-y-2">
-
-          {job.urls.map((urlCheck) => (
-            <div
-              key={urlCheck.url}
-              className="
-                flex
-                items-center
-                justify-between
-                rounded-lg
-                border
-                p-3
-              "
-            >
-
-              <div>
-                <p className="text-sm font-medium">
-                  {urlCheck.url}
-                </p>
-
-                {urlCheck.error && (
-                  <p className="text-sm text-red-500">
-                    {urlCheck.error}
-                  </p>
-                )}
-
-              </div>
-
-              <div className="flex items-center gap-3">
-                {urlCheck.httpStatus && (
-                  <span className="text-sm">
-                    {urlCheck.httpStatus}
-                  </span>
-                )}
-
-                {urlCheck.duration && (
-                  <span className="text-sm text-gray-500">
-                    {urlCheck.duration}ms
-                  </span>
-                )}
-
-                <StatusBadge
-                  status={
-                    urlCheck.status
-                  }
-                />
-              </div>
-            </div>
-          ))}
+          {job.urls.map((urlCheck) => <UrlCard key={urlCheck.url} urlCheck={urlCheck} />)}
         </div>
       </div>
     </div>
@@ -199,8 +136,8 @@ function InfoItem({
   value: string | number;
 }) {
   return (
-    <div className="rounded-lg bg-slate-50 p-3">
-      <p className="text-xs text-gray-500">
+    <div className="rounded-lg bg-slate-50 p-2 text-xs">
+      <p className=" text-gray-500">
         {label}
       </p>
 

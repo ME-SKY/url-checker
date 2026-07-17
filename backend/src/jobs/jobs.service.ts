@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { randomUUID } from 'crypto';
+import { randomBytes } from 'crypto';
 import { CreateJobDto } from './dto/create-job.dto';
 import { Job } from './interfaces/job.interface';
 import { JobsProcessor } from './processor/job.processor';
@@ -15,7 +15,7 @@ export class JobsService {
 
   createJob(dto: CreateJobDto) {
     const job: Job = {
-      id: randomUUID(),
+      id: randomBytes(4).toString('hex'),
 
       createdAt: new Date(),
 
