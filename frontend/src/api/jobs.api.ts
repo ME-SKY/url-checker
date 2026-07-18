@@ -1,6 +1,6 @@
 import type { Job, JobSummary } from '../types/job';
 
-const API_URL = 'http://localhost:3000/api/jobs';
+const API_URL = `${import.meta.env.VITE_API_URL}/jobs`;
 
 export async function getJobs(): Promise<JobSummary[]> {
   const response = await fetch(API_URL);
