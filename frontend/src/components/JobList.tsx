@@ -17,24 +17,23 @@ export function JobList() {
     fetchJobs();
   }, [fetchJobs]);
 
+  if (!loading && jobs.length === 0) {
+    return <p className="p-6 text-center text-gray-500">No jobs yet.</p>
+  }
+
 
   return (
     <div className="flex min-h-0 flex-col rounded-xl border bg-white p-6">
-      <h2 className="mb-4 text-xl font-semibold">
-        Jobs
-      </h2>
 
       {loading && (
-        <p className="text-sm text-gray-500">
+        <p className="relative h-full bg-white text-sm text-gray-500">
           Loading...
         </p>
       )}
 
-      {!loading && jobs.length === 0 && (
-        <p className="text-sm text-gray-500">
-          No jobs yet.
-        </p>
-      )}
+      <h2 className="text-xl font-semibold mb-5">
+        Jobs
+      </h2>
 
       <div className="min-h-0 flex-1 space-y-3 overflow-y-auto scrollbar-thin">
         {jobs.map((job) => (

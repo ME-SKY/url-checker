@@ -17,6 +17,7 @@ function isJobFinished(
 export function useJobPolling() {
   const activeJobId = useJobsStore((state) => state.activeJobId);
   const updateActiveJob = useJobsStore((state) => state.updateActiveJob);
+  const fetchJobs = useJobsStore((state) => state.fetchJobs);
 
   useEffect(() => {
     if (!activeJobId) {
@@ -40,6 +41,8 @@ export function useJobPolling() {
 
         if (!isJobFinished(job.status)) {
           timeout = setTimeout(poll, 2000);
+        } else {
+          await fetchJobs();
         }
 
       } catch (error) {

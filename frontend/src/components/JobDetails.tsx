@@ -1,3 +1,4 @@
+import { ArrowLeft } from 'lucide-react';
 import { useJobsStore } from '../store/jobs.store';
 import { StatusBadge } from './StatusBadge';
 import { UrlCard } from './UrlCard';
@@ -5,14 +6,13 @@ import { UrlCard } from './UrlCard';
 export function JobDetails() {
   const job = useJobsStore((state) => state.activeJob);
   const cancelJob = useJobsStore((state) => state.cancelJob);
+  const setActiveJob = useJobsStore((state) => state.updateActiveJob);
 
   if (!job) {
     return (
-      <div className="rounded-xl border bg-white p-6 max-h-20">
-        <p className="text-gray-500">
+        <p className="min-h-0 p-6 text-center text-gray-500">
           Select a job to see details
         </p>
-      </div>
     );
   }
 
@@ -25,8 +25,27 @@ export function JobDetails() {
 
 
   return (
-    <div className="h-fit space-y-6 rounded-xl border bg-white p-6">
-      <div className="flex items-start justify-between">
+    <div
+      className="
+    max-h-full
+    flex
+    flex-col
+    rounded-xl
+    border
+    bg-white
+    p-6
+  "
+    >
+      <button onClick={() => setActiveJob(null)}
+        className="md:hidden w-fit flex items-center gap-1 rounded-lg border border-slate-200 bg-white p-1.5
+        text-sm text-slate-600 shadow-sm transition hover:bg-slate-50 hover:text-slate-900 mb-3
+  "
+      >
+        <ArrowLeft size={14} />
+        Back
+      </button>
+      <div className="flex items-start justify-between mb-5">
+
         <div>
           <h2 className="text-xl font-semibold">
             Job details
@@ -54,8 +73,7 @@ export function JobDetails() {
       </div>
 
 
-      <div className="grid grid-cols-3 gap-4">
-
+      <div className="grid grid-cols-3 gap-4 mb-5">
         <InfoItem
           label="Processed"
           value={`${completed}/${job.urls.length}`}
@@ -82,22 +100,20 @@ export function JobDetails() {
               : '-'
           }
         />
-
       </div>
 
+      {job.status === 'in_progress' &&
+        <div className="mb-5">
+          <div className="mb-2 flex justify-between text-sm">
+            <span>
+              Progress
+            </span>
 
-      <div>
-        <div className="mb-2 flex justify-between text-sm">
-          <span>
-            Progress
-          </span>
+            <span>
+              {completed}/{job.urls.length}
+            </span>
+          </div>
 
-          <span>
-            {completed}/{job.urls.length}
-          </span>
-        </div>
-
-        {job.status === 'in_progress' &&
           <div className="h-2 overflow-hidden rounded-full bg-slate-200">
             <div
               className="
@@ -111,15 +127,15 @@ export function JobDetails() {
               }}
             ></div>
           </div>
-        }
-      </div>
+        </div>
+      }
 
-      <div>
+      <div className="flex min-h-0 flex-1 flex-col">
         <h3 className="mb-3 font-medium">
           URLs
         </h3>
 
-        <div className="space-y-2">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-2 scrollbar-thin">
           {job.urls.map((urlCheck) => <UrlCard key={urlCheck.url} urlCheck={urlCheck} />)}
         </div>
       </div>

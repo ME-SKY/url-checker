@@ -25,7 +25,7 @@ export function JobForm({ className }: JobFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className={`w-120 h-40 flex flex-col gap-4 ${className}`}>
+    <form onSubmit={handleSubmit} className={`max-w-120 w-full h-40 flex flex-col gap-3 ${className}`}>
       <textarea value={urls} onChange={(event) => setUrls(event.target.value)}
         placeholder={"https://google.com\nhttps://github.com\n..."} rows={8}
         className="rounded-lg border p-3 font-mono overflow-x-auto whitespace-pre resize-none" />
@@ -33,8 +33,15 @@ export function JobForm({ className }: JobFormProps) {
       <button
         type="submit"
         disabled={loading}
-        className="rounded-lg bg-blue-600 px-4 py-2 text-white disabled:opacity-50">
-        {loading ? 'Создание...' : 'Запустить проверку'}
+        className="self-center w-fit rounded-lg
+  bg-slate-800
+  px-4
+  py-2
+  text-white
+  transition-colors
+  hover:bg-slate-700
+  disabled:opacity-50">
+        {loading ? 'Checking...' : 'Check'}
       </button>
     </form>
   );

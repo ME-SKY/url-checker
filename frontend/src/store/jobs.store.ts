@@ -31,7 +31,7 @@ interface JobsState {
   ) => Promise<void>;
 
   updateActiveJob: (
-    job: Job
+    job: Job | null,
   ) => void;
 }
 
@@ -132,7 +132,7 @@ export const useJobsStore =
     updateActiveJob(job) {
       set({
         activeJob: job,
-        activeJobId: job.id
+        activeJobId: job ? job.id : job
       });
     }
   }));
