@@ -13,8 +13,6 @@ services:
   frontend:
     build:
       context: ./frontend
-      args:
-        VITE_BASE_PATH: /url-checker/
     container_name: url-checker-frontend
     restart: unless-stopped
     ports:
