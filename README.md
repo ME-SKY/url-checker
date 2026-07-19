@@ -1,52 +1,148 @@
 # Async URL Checker
 
-Fullstack application for asynchronous URL availability checking.
+🚀 Демо доступно по адресу:
+https://subdomain-freedom.duckdns.org/url-checker
 
-The project provides a REST API for creating URL checking jobs and a web interface for monitoring their progress.
+Fullstack-приложение для асинхронной проверки доступности URL.
 
-## Features
-
-### Backend
-
-- Create asynchronous URL checking jobs
-- Check URLs using HTTP HEAD requests
-- Track job progress and status
-- Limit concurrent URL checks
-- Cancel running jobs
-- In-memory data storage
-
-### Frontend
-
-- Create URL checking jobs
-- View jobs list
-- Monitor active job progress
-- View detailed URL statuses
-- Cancel running jobs
-
-## Tech Stack
+## Стек 
 
 ### Backend
-
 - Node.js
 - TypeScript
 - NestJS
 
 ### Frontend
-
 - React
 - TypeScript
 - Vite
+- Zustand
+- Tailwind
 
-## Project Structure
+## Запуск через Docker
+
+Перед запуском необходимо создать файл окружения и возможно придется пробросить порты:
+
+`frontend/.env.production`
+
+```env
+VITE_BASE_PATH=/url-checker/
+VITE_API_URL=/api
+```
+
+Запуск контейнеров:
+
+```bash
+docker compose up --build -d
+```
+
+После запуска:
+
+Frontend:
+```
+http://localhost:8282
+```
+
+Backend API:
+```
+http://localhost:3001/api
+```
+
+## Локально
+
+### Backend
+
+```bash
+cd backend
+
+npm install
+
+npm run start:dev
+```
+
+Backend будет доступен:
 
 ```
-url-checker/
-│
-├── backend/   # NestJS REST API
-│
-├── frontend/  # React application
-│
-└── README.md
+http://localhost:3000
+```
+
+### Frontend
+
+Создать файл:
+
+`frontend/.env.development`
+
+```env
+VITE_BASE_PATH=/
+VITE_API_URL=http://localhost:3000/api
+```
+
+Запуск:
+
+```bash
+cd frontend
+
+npm install
+
+npm run dev
+```
+
+Frontend будет доступен:
+
+```
+http://localhost:5173
+```
+
+---
+
+# English Version
+
+🚀 Live demo:
+https://subdomain-freedom.duckdns.org/url-checker
+
+Fullstack application for asynchronous URL availability checking.
+
+## Tech Stack
+
+### Backend
+- Node.js
+- TypeScript
+- NestJS
+
+### Frontend
+- React
+- TypeScript
+- Vite
+- Zustand
+- Tailwind
+
+## Docker Deployment
+
+Before launching, you need to create an environment file and you may have to forward ports:
+
+`frontend/.env.production`
+
+```env
+VITE_BASE_PATH=/url-checker/
+VITE_API_URL=/api
+```
+
+Start containers:
+
+```bash
+docker compose up --build -d
+```
+
+After startup:
+
+Frontend:
+```
+http://localhost:8282
+```
+
+Backend API:
+```
+http://localhost:3001/api
 ```
 
 ## Local Development
@@ -61,13 +157,24 @@ npm install
 npm run start:dev
 ```
 
-Backend runs on:
+Backend:
 
 ```
 http://localhost:3000
 ```
 
 ### Frontend
+
+Create:
+
+`frontend/.env`
+
+```env
+VITE_BASE_PATH=/
+VITE_API_URL=http://localhost:3000/api
+```
+
+Run:
 
 ```bash
 cd frontend
@@ -77,20 +184,8 @@ npm install
 npm run dev
 ```
 
-Frontend runs on:
+Frontend:
 
 ```
 http://localhost:5173
 ```
-
-## Docker
-
-Coming soon.
-
-## Live Demo
-
-Coming soon.
-
-## License
-
-MIT

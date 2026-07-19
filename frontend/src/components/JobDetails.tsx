@@ -1,7 +1,9 @@
 import { ArrowLeft } from 'lucide-react';
 import { useJobsStore } from '../store/jobs.store';
-import { StatusBadge } from './StatusBadge';
+import { StatusBadge } from './ui/StatusBadge';
 import { UrlCard } from './UrlCard';
+import { InfoItem } from './ui/InfoItem';
+import { StatusCount } from './ui/StatusCount';
 
 export function JobDetails() {
   const job = useJobsStore((state) => state.activeJob);
@@ -10,9 +12,9 @@ export function JobDetails() {
 
   if (!job) {
     return (
-        <p className="min-h-0 p-6 text-center text-gray-500">
-          Select a job to see details
-        </p>
+      <p className="min-h-0 p-6 text-center text-gray-500">
+        Select a job to see details
+      </p>
     );
   }
 
@@ -21,25 +23,18 @@ export function JobDetails() {
     item.status === 'error'
   ).length;
 
+  const success = job.urls.filter((item) => item.status === 'success').length;
+  const error = job.urls.filter((item) => item.status === 'error').length;
+  const cancelled = job.urls.filter((item) => item.status === 'cancelled').length;
+
   const progress = Math.round((completed / job.urls.length) * 100);
 
 
   return (
-    <div
-      className="
-    max-h-full
-    flex
-    flex-col
-    rounded-xl
-    border
-    bg-white
-    p-6
-  "
-    >
+    <div className="max-h-full flex flex-col rounded-xl border bg-white p-6">
       <button onClick={() => setActiveJob(null)}
         className="md:hidden w-fit flex items-center gap-1 rounded-lg border border-slate-200 bg-white p-1.5
-        text-sm text-slate-600 shadow-sm transition hover:bg-slate-50 hover:text-slate-900 mb-3
-  "
+        text-sm text-slate-600 shadow-sm transition hover:bg-slate-50 hover:text-slate-900 mb-3"
       >
         <ArrowLeft size={14} />
         Back
@@ -131,35 +126,23 @@ export function JobDetails() {
       }
 
       <div className="flex min-h-0 flex-1 flex-col">
-        <h3 className="mb-3 font-medium">
-          URLs
-        </h3>
+        <div className="flex flex-row justify-between">
+          <h3 className="mb-3 font-medium">
+            URLs
+          </h3>
+
+          <div className="flex flex-row gap-2">
+            <StatusCount status="success" value={success} />
+            <StatusCount status="error" value={error} />
+            <StatusCount status="cancelled" value={cancelled} />
+          </div>
+        </div>
+
 
         <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-2 scrollbar-thin">
           {job.urls.map((urlCheck) => <UrlCard key={urlCheck.url} urlCheck={urlCheck} />)}
         </div>
       </div>
-    </div>
-  );
-}
-
-
-function InfoItem({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | number;
-}) {
-  return (
-    <div className="rounded-lg bg-slate-50 p-2 text-xs">
-      <p className=" text-gray-500">
-        {label}
-      </p>
-
-      <p className="mt-1 font-medium">
-        {value}
-      </p>
     </div>
   );
 }

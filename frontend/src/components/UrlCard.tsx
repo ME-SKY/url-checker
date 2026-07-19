@@ -1,16 +1,14 @@
 import { useState } from 'react';
 import { Check, Copy } from 'lucide-react';
 
-import { StatusBadge } from './StatusBadge';
+import { StatusBadge } from './ui/StatusBadge';
 import type { UrlCheck } from '../types/url-check';
 
 interface UrlCardProps {
   urlCheck: UrlCheck;
 }
 
-export function UrlCard({
-  urlCheck,
-}: UrlCardProps) {
+export function UrlCard({ urlCheck }: UrlCardProps) {
   const [copied, setCopied] = useState(false);
 
   async function handleCopy() {
@@ -25,66 +23,22 @@ export function UrlCard({
 
 
   return (
-    <div
-      className="
-        flex
-        min-h-16
-        items-start
-        gap-2
-        rounded-lg
-        border
-        bg-white
-        p-2.5
-        transition-colors
-        hover:bg-slate-50
-      "
-    >
+    <div className="flex min-h-16 items-start gap-2 rounded-lg border
+        bg-white p-2.5 transition-colors hover:bg-slate-50">
 
-      {/* URL + мета */}
-      <div
-        className="
-          min-w-0
-          flex-1
-        "
-      >
-
+      <div className="min-w-0 flex-1">
         <div
-          className="
-            flex
-            min-w-0
-            items-center
-            gap-1
-          "
-        >
+          className="flex min-w-0 items-center gap-1">
 
-          <p
-            className="
-              min-w-0
-              max-w-full
-              truncate
-              font-mono
-              text-sm
-              text-slate-800
-            "
-            title={urlCheck.url}
-          >
+          <p className="min-w-0 max-w-full truncate font-mono text-sm text-slate-800"
+            title={urlCheck.url}>
             {urlCheck.url}
           </p>
 
 
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="
-              shrink-0
-              rounded
-              p-1
-              text-slate-400
-              transition-colors
-
-              hover:bg-slate-200
-              hover:text-slate-700
-            "
+          <button type="button" onClick={handleCopy}
+            className="shrink-0 rounded p-1 text-slate-400 transition-colors
+              hover:bg-slate-200 hover:text-slate-700"
             title="Copy URL"
           >
             {copied ? (
@@ -93,7 +47,6 @@ export function UrlCard({
               <Copy size={15} />
             )}
           </button>
-
         </div>
 
 
@@ -122,28 +75,13 @@ export function UrlCard({
           )}
 
         </div>
-
       </div>
+      
+      <div className="flex shrink-0 flex-col items-end">
 
+        <StatusBadge status={urlCheck.status}/>
 
-
-      {/* Статус + ошибка */}
-      <div
-        className="
-          flex
-          shrink-0
-          flex-col
-          items-end
-        "
-      >
-
-        <StatusBadge
-          status={urlCheck.status}
-        />
-
-
-        <p
-          className="
+        <p className="
             mt-1
             h-4
             w-full
@@ -161,82 +99,4 @@ export function UrlCard({
 
     </div>
   );
-}
-
-// import { StatusBadge } from './StatusBadge';
-// import type { UrlCheck } from '../types/url-check';
-
-// interface UrlCardProps {
-//   urlCheck: UrlCheck;
-// }
-
-// export function UrlCard({
-//   urlCheck,
-// }: UrlCardProps) {
-//   return (
-//     <div
-//       className="
-//         flex
-//         items-start
-//         justify-between
-//         gap-4
-//         rounded-lg
-//         border
-//         p-3
-//         transition-colors
-//         hover:bg-slate-50
-//       "
-//     >
-//       <div className="min-w-0 flex-1">
-
-//         <p
-//           className="
-//             truncate
-//             font-mono
-//             text-sm
-//             text-slate-800
-//           "
-//           title={urlCheck.url}
-//         >
-//           {urlCheck.url}
-//         </p>
-
-//         <div className="mt-1 flex items-center gap-3 text-xs text-slate-500">
-
-//           {urlCheck.httpStatus && (
-//             <span>
-//               HTTP {urlCheck.httpStatus}
-//             </span>
-//           )}
-
-//           {urlCheck.duration && (
-//             <span>
-//               {urlCheck.duration} ms
-//             </span>
-//           )}
-
-//         </div>
-
-//         {urlCheck.error && (
-//           <p
-//             className="
-//               mt-1
-//               truncate
-//               text-xs
-//               text-red-500
-//             "
-//             title={urlCheck.error}
-//           >
-//             {urlCheck.error}
-//           </p>
-//         )}
-
-//       </div>
-
-//       <div className="shrink-0">
-//         <StatusBadge status={urlCheck.status} />
-//       </div>
-
-//     </div>
-//   );
-// }
+};

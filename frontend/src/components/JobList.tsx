@@ -3,19 +3,13 @@ import { useJobsStore } from '../store/jobs.store';
 import { JobCard } from './JobCard';
 
 export function JobList() {
-  const jobs =
-    useJobsStore((state) => state.jobs);
-
-  const fetchJobs =
-    useJobsStore((state) => state.fetchJobs);
-
-  const loading =
-    useJobsStore((state) => state.loading);
-
+  const activeJobId = useJobsStore((state) => state.activeJobId);
+  const jobs = useJobsStore((state) => state.jobs);
+  const loading = useJobsStore((state) => state.loading);
 
   useEffect(() => {
-    fetchJobs();
-  }, [fetchJobs]);
+    useJobsStore.getState().fetchJobs();
+  }, []);
 
   if (!loading && jobs.length === 0) {
     return <p className="p-6 text-center text-gray-500">No jobs yet.</p>
@@ -24,13 +18,6 @@ export function JobList() {
 
   return (
     <div className="flex min-h-0 flex-col rounded-xl border bg-white p-6">
-
-      {loading && (
-        <p className="relative h-full bg-white text-sm text-gray-500">
-          Loading...
-        </p>
-      )}
-
       <h2 className="text-xl font-semibold mb-5">
         Jobs
       </h2>
@@ -40,6 +27,8 @@ export function JobList() {
           <JobCard
             key={job.id}
             job={job}
+            isActive={job.id === activeJobId}
+            onClick={useJobsStore.getState().selectJob}
           />
         ))}
       </div>

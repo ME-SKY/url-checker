@@ -30,18 +30,11 @@ export function JobForm({ className }: JobFormProps) {
         placeholder={"https://google.com\nhttps://github.com\n..."} rows={8}
         className="rounded-lg border p-3 font-mono overflow-x-auto whitespace-pre resize-none" />
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="self-center w-fit rounded-lg
-  bg-slate-800
-  px-4
-  py-2
-  text-white
-  transition-colors
-  hover:bg-slate-700
-  disabled:opacity-50">
-        {loading ? 'Checking...' : 'Check'}
+      <button type="submit" disabled={loading}
+        className="self-center w-fit rounded-lg bg-slate-800
+          px-4 py-2 text-white transition-colors hover:bg-slate-700 
+          disabled:opacity-50">
+        Check
       </button>
     </form>
   );

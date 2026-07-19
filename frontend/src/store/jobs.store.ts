@@ -49,6 +49,13 @@ export const useJobsStore =
 
         const jobs = await getJobs();
 
+        set((state) => ({
+          jobs: mergeJobs(
+            state.jobs,
+            jobs,
+          ),
+        }));
+
         set({ jobs });
       } catch (error) {
         set({
@@ -69,11 +76,14 @@ export const useJobsStore =
         const job = await getJobById(jobId);
         const jobs = await getJobs();
 
-        set({
+        set((state) => ({
+          jobs: mergeJobs(
+            state.jobs,
+            jobs,
+          ),
           activeJobId: jobId,
           activeJob: job,
-          jobs,
-        });
+        }));
       } catch (error) {
         set({
           error: error instanceof Error
@@ -113,11 +123,15 @@ export const useJobsStore =
         const job = await cancelJobApi(id);
         const jobs = await getJobs();
 
-        set({
+        set((state) => ({
+          jobs: mergeJobs(
+            state.jobs,
+            jobs,
+          ),
           activeJob: job,
-          activeJobId: job.id,
-          jobs,
-        });
+          activeJobId: job.id
+        }));
+
       } catch (error) {
         set({
           error: error instanceof Error
@@ -136,3 +150,23 @@ export const useJobsStore =
       });
     }
   }));
+
+function mergeJobs(oldJobs: JobSummary[], newJobs: JobSummary[]) {
+  const oldMap = new Map(
+    oldJobs.map(job => [job.id, job])
+  );
+
+  return newJobs.map((newJob) => {
+    const oldJob = oldMap.get(newJob.id);
+
+    if (
+      oldJob &&
+      oldJob.status === newJob.status &&
+      oldJob.success === newJob.success &&
+      oldJob.errors === newJob.errors
+    ) {
+      return oldJob;
+    }
+    return newJob;
+  });
+}

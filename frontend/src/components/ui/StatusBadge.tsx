@@ -1,5 +1,6 @@
-import type { JobStatus } from '../types/job';
-import type { UrlCheckStatus } from '../types/url-check';
+import { memo } from 'react';
+import type { JobStatus } from '../../types/job';
+import type { UrlCheckStatus } from '../../types/url-check';
 
 type Status = JobStatus | UrlCheckStatus;
 
@@ -27,8 +28,7 @@ const labels: Record<Status, string> = {
   error: 'Error'
 };
 
-export function StatusBadge({ status }: Props) {
-  console.log('Status:', status);
+export const StatusBadge = memo(function StatusBadge({ status }: Props) {
   return (
     <span
       className={`
@@ -43,4 +43,4 @@ export function StatusBadge({ status }: Props) {
       {labels[status]}
     </span>
   );
-}
+});

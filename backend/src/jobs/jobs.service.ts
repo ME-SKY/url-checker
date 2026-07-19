@@ -35,26 +35,28 @@ export class JobsService {
   }
 
   getJobs(): JobSummaryDto[] {
-    return this.jobs.map((job) => {
-      const success =
-        job.urls.filter(
-          (url) => url.status === 'success'
-        ).length;
+    return [...this.jobs]
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    .map((job) => {
+        const success =
+          job.urls.filter(
+            (url) => url.status === 'success'
+          ).length;
 
-      const errors =
-        job.urls.filter(
-          (url) => url.status === 'error'
-        ).length;
+        const errors =
+          job.urls.filter(
+            (url) => url.status === 'error'
+          ).length;
 
-      return {
-        id: job.id,
-        createdAt: job.createdAt,
-        status: job.status,
-        total: job.urls.length,
-        success,
-        errors,
-      };
-    });
+        return {
+          id: job.id,
+          createdAt: job.createdAt,
+          status: job.status,
+          total: job.urls.length,
+          success,
+          errors,
+        };
+      });
   }
 
   findJobById(id: string): Job {
